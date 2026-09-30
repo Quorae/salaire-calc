@@ -1,14 +1,32 @@
 services:
-  salaire-calc:
+  web:
     build: .
     image: salaire-calc:latest
     container_name: salaire-calc
     restart: unless-stopped
     ports:
       - "8300:80"
+    depends_on:
+      - api
     networks:
       - media
+      - interne
+
+  api:
+    build:
+      context: .
+      dockerfile: Dockerfile.api
+    image: salaire-calc-api:latest
+    container_name: salaire-calc-api
+    restart: unless-stopped
+    env_file:
+      - .env
+    networks:
+      - interne
 
 networks:
   media:
     external: true
+  # Réseau privé web ↔ api, sans accès extérieur : l'API n'est joignable que par nginx.
+  interne:
+    internal: true
