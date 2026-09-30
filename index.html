@@ -1,0 +1,284 @@
+<!doctype html>
+<html lang="fr">
+<head>
+  <meta charset="utf-8">
+  <meta name="viewport" content="width=device-width, initial-scale=1">
+  <meta name="color-scheme" content="dark">
+  <meta name="theme-color" content="#0b0f14">
+  <title>Salaire brut → net · 2026</title>
+  <link rel="icon" href="data:image/svg+xml,%3Csvg xmlns='http://www.w3.org/2000/svg' viewBox='0 0 32 32'%3E%3Cdefs%3E%3ClinearGradient id='g' x1='0' y1='0' x2='1' y2='1'%3E%3Cstop offset='0' stop-color='%234f8cff'/%3E%3Cstop offset='1' stop-color='%238b5cf6'/%3E%3C/linearGradient%3E%3C/defs%3E%3Crect width='32' height='32' rx='8' fill='url(%23g)'/%3E%3Ctext x='16' y='22.5' font-family='system-ui,sans-serif' font-size='18' font-weight='700' fill='white' text-anchor='middle'%3E%E2%82%AC%3C/text%3E%3C/svg%3E">
+  <link rel="stylesheet" href="style.css">
+</head>
+<body>
+  <div class="backdrop" aria-hidden="true"></div>
+
+  <header class="top">
+    <div class="brand">
+      <span class="logo" aria-hidden="true">
+        <svg viewBox="0 0 24 24" width="22" height="22" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round">
+          <path d="M17.5 6.5A7 7 0 1 0 17.5 17.5"/><path d="M4 10h9M4 14h9"/>
+        </svg>
+      </span>
+      <div>
+        <h1>Salaire brut → net</h1>
+        <p>France · barèmes 2026 · prélèvement à la source</p>
+      </div>
+    </div>
+  </header>
+
+  <main class="layout">
+    <form class="card inputs" id="form" autocomplete="off" novalidate>
+      <fieldset class="field">
+        <legend class="sr-only">Sens du calcul</legend>
+        <div class="seg seg--accent" style="--n: 2">
+          <label><input type="radio" name="sens" value="direct" checked><span>Brut → Net</span></label>
+          <label><input type="radio" name="sens" value="inverse"><span>Net → Brut</span></label>
+        </div>
+      </fieldset>
+
+      <div class="field">
+        <div class="field-head">
+          <label class="label" for="montant" id="montant-label">Salaire brut</label>
+          <fieldset class="seg seg--sm" style="--n: 2">
+            <legend class="sr-only">Période du montant</legend>
+            <label><input type="radio" name="periode" value="mensuel" checked><span>Mensuel</span></label>
+            <label><input type="radio" name="periode" value="annuel"><span>Annuel</span></label>
+          </fieldset>
+        </div>
+        <div class="amount">
+          <input id="montant" type="text" inputmode="decimal" value="3 000" aria-describedby="montant-hint">
+          <span class="suffix" aria-hidden="true">€</span>
+        </div>
+        <input type="range" id="montant-range" class="range" aria-label="Ajuster le montant">
+        <p class="hint" id="montant-hint"></p>
+      </div>
+
+      <fieldset class="field" id="cible-field" hidden>
+        <legend class="label">Net visé</legend>
+        <div class="seg" style="--n: 2">
+          <label><input type="radio" name="cible" value="netSocial"><span>Avant impôt</span></label>
+          <label><input type="radio" name="cible" value="netApresImpot" checked><span>Après impôt</span></label>
+        </div>
+      </fieldset>
+
+      <fieldset class="field">
+        <legend class="label">Statut</legend>
+        <div class="seg" style="--n: 2">
+          <label><input type="radio" name="statut" value="non-cadre" checked><span>Non-cadre</span></label>
+          <label><input type="radio" name="statut" value="cadre"><span>Cadre</span></label>
+        </div>
+      </fieldset>
+
+      <div class="field">
+        <div class="field-head">
+          <label class="label" for="temps">Temps de travail</label>
+          <div class="mini-input">
+            <input id="temps" type="text" inputmode="decimal" value="100" size="4">
+            <span aria-hidden="true">%</span>
+          </div>
+        </div>
+        <input type="range" id="temps-range" class="range" min="10" max="100" step="1" value="100" aria-label="Ajuster le temps de travail">
+      </div>
+
+      <fieldset class="field">
+        <legend class="label">Prélèvement à la source</legend>
+        <div class="seg" style="--n: 3">
+          <label><input type="radio" name="pas" value="neutre" checked><span>Taux neutre</span></label>
+          <label><input type="radio" name="pas" value="personnalise"><span>Personnalisé</span></label>
+          <label><input type="radio" name="pas" value="bareme"><span>Barème IR</span></label>
+        </div>
+
+        <div class="pas-panel" data-pas="neutre">
+          <p class="hint">Grille officielle 2026 (métropole), appliquée au net imposable mensuel.</p>
+        </div>
+
+        <div class="pas-panel" data-pas="personnalise" hidden>
+          <div class="row">
+            <label class="label-inline" for="taux-perso">Taux communiqué par l’administration</label>
+            <div class="mini-input">
+              <input id="taux-perso" type="text" inputmode="decimal" size="4" placeholder="0,0">
+              <span aria-hidden="true">%</span>
+            </div>
+          </div>
+        </div>
+
+        <div class="pas-panel" data-pas="bareme" hidden>
+          <label class="switch">
+            <input type="checkbox" id="couple" role="switch">
+            <span class="switch-track" aria-hidden="true"></span>
+            <span>Marié ou pacsé</span>
+          </label>
+          <div class="row">
+            <span class="label-inline" id="enfants-label">Enfants à charge</span>
+            <div class="stepper" role="group" aria-labelledby="enfants-label">
+              <button type="button" data-pas-enfants="-1" aria-label="Retirer un enfant">−</button>
+              <output id="enfants" aria-live="polite">0</output>
+              <button type="button" data-pas-enfants="1" aria-label="Ajouter un enfant">+</button>
+            </div>
+          </div>
+          <p class="hint"><strong id="parts">1 part</strong> de quotient familial. Estimation sur ce seul salaire, sans autre revenu dans le foyer.</p>
+        </div>
+      </fieldset>
+    </form>
+
+    <section class="results" aria-label="Résultats">
+      <div class="card banner" id="banner" hidden>
+        <div>
+          <span class="kicker">Brut nécessaire</span>
+          <div class="banner-value"><span id="banner-brut">0 €</span> <small>/ mois</small></div>
+        </div>
+        <p class="banner-sub" id="banner-sub"></p>
+      </div>
+
+      <div class="card hero">
+        <span class="kicker">Net après impôt <span class="muted">/ mois</span></span>
+        <div class="hero-value"><span id="hero-int">0</span><span class="hero-dec" id="hero-dec">,00 €</span></div>
+        <p class="hero-sub">soit <strong id="hero-annuel">0 €</strong> par an</p>
+        <div class="chips">
+          <span class="chip"><span class="dot dot--cotis" aria-hidden="true"></span>Cotisations <b id="chip-cotis">0 %</b></span>
+          <span class="chip"><span class="dot dot--impot" aria-hidden="true"></span><span id="chip-pas-label">Taux neutre</span> <b id="chip-pas">0 %</b></span>
+          <span class="chip" id="chip-tmi" hidden>TMI <b id="chip-tmi-val">0 %</b></span>
+        </div>
+      </div>
+
+      <div class="stats">
+        <article class="card stat">
+          <h2 class="stat-label">Net avant impôt</h2>
+          <p class="stat-value" id="s-net-social">0 €</p>
+          <p class="stat-sub">net social · <span class="nw"><span id="s-net-social-an">0 €</span> / an</span></p>
+        </article>
+        <article class="card stat">
+          <h2 class="stat-label">Net imposable</h2>
+          <p class="stat-value" id="s-net-imposable">0 €</p>
+          <p class="stat-sub"><span class="nw"><span id="s-net-imposable-an">0 €</span> / an</span></p>
+        </article>
+        <article class="card stat">
+          <h2 class="stat-label"><span class="dot dot--impot" aria-hidden="true"></span>Prélèvement à la source</h2>
+          <p class="stat-value" id="s-pas">0 €</p>
+          <p class="stat-sub"><span class="nw">taux <span id="s-pas-taux">0 %</span></span> · <span class="nw"><span id="s-pas-an">0 €</span> / an</span></p>
+        </article>
+        <article class="card stat">
+          <h2 class="stat-label"><span class="dot dot--cotis" aria-hidden="true"></span>Cotisations salariales</h2>
+          <p class="stat-value" id="s-cotis">0 €</p>
+          <p class="stat-sub"><span class="nw"><span id="s-cotis-taux">0 %</span> du brut</span> · <span class="nw"><span id="s-cotis-an">0 €</span> / an</span></p>
+        </article>
+      </div>
+
+      <div class="duo">
+        <section class="card donut-card" id="donut-card" aria-labelledby="donut-titre">
+          <h2 class="card-title" id="donut-titre">Répartition du brut</h2>
+          <div class="donut-wrap">
+            <div class="donut">
+              <svg viewBox="0 0 120 120" role="img" aria-labelledby="donut-titre">
+                <circle class="donut-track" cx="60" cy="60" r="48"/>
+                <circle class="donut-seg" data-cle="net" cx="60" cy="60" r="48" pathLength="100"><title>Net après impôt</title></circle>
+                <circle class="donut-seg" data-cle="cotisations" cx="60" cy="60" r="48" pathLength="100"><title>Cotisations</title></circle>
+                <circle class="donut-seg" data-cle="impot" cx="60" cy="60" r="48" pathLength="100"><title>Impôt</title></circle>
+              </svg>
+              <div class="donut-center" aria-hidden="true">
+                <strong id="donut-pct">0 %</strong>
+                <span id="donut-label">net / brut</span>
+              </div>
+            </div>
+            <ul class="legend">
+              <li data-cle="net">
+                <span class="swatch swatch--net"></span><span class="legend-name">Net après impôt</span>
+                <span class="legend-val" id="l-net">0 €</span><span class="legend-pct" id="l-net-pct">0 %</span>
+              </li>
+              <li data-cle="cotisations">
+                <span class="swatch swatch--cotis"></span><span class="legend-name">Cotisations</span>
+                <span class="legend-val" id="l-cotisations">0 €</span><span class="legend-pct" id="l-cotisations-pct">0 %</span>
+              </li>
+              <li data-cle="impot">
+                <span class="swatch swatch--impot"></span><span class="legend-name">Impôt (PAS)</span>
+                <span class="legend-val" id="l-impot">0 €</span><span class="legend-pct" id="l-impot-pct">0 %</span>
+              </li>
+              <li class="legend-total">
+                <span></span><span class="legend-name">Brut</span>
+                <span class="legend-val" id="l-brut">0 €</span><span class="legend-pct">100 %</span>
+              </li>
+            </ul>
+          </div>
+        </section>
+
+        <section class="card smic-card" aria-labelledby="smic-titre">
+          <h2 class="card-title" id="smic-titre">Position par rapport au SMIC</h2>
+          <div class="smic-body">
+            <div>
+              <p class="smic-ratio"><span id="smic-ratio">0,00</span><small>× SMIC net</small></p>
+              <p class="smic-text" id="smic-text"></p>
+            </div>
+            <div class="gauge" aria-hidden="true">
+              <div class="gauge-track"><div class="gauge-fill" id="gauge-fill"></div></div>
+              <div class="gauge-ticks">
+                <span style="--at: 25%">SMIC</span><span style="--at: 50%">×2</span><span style="--at: 75%">×3</span><span style="--at: 100%">×4</span>
+              </div>
+            </div>
+          </div>
+          <p class="alert" id="smic-alert" hidden>
+            <svg viewBox="0 0 24 24" width="16" height="16" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="M12 9v4M12 17h.01"/><path d="M10.3 3.9 1.8 18a2 2 0 0 0 1.7 3h17a2 2 0 0 0 1.7-3L13.7 3.9a2 2 0 0 0-3.4 0z"/></svg>
+            <span id="smic-alert-text"></span>
+          </p>
+          <p class="smic-ref">SMIC 2026 : 12,31&nbsp;€/h · 1&#8239;867,02&nbsp;€ brut · 1&#8239;477,93&nbsp;€ net</p>
+        </section>
+      </div>
+
+      <section class="card ir-card" id="ir-card" aria-labelledby="ir-titre" hidden>
+        <div class="card-head">
+          <h2 class="card-title" id="ir-titre">Estimation de l’impôt sur le revenu</h2>
+          <span class="tag">Barème 2026 · revenus 2025</span>
+        </div>
+        <div class="ir-grid">
+          <div class="ir-main">
+            <span class="kicker">Impôt annuel estimé</span>
+            <strong id="ir-impot">0 €</strong>
+            <span class="muted">soit <span id="ir-mensuel">0 €</span> / mois</span>
+          </div>
+          <dl class="ir-list">
+            <div><dt>Revenu imposable (12 × net imposable)</dt><dd id="ir-revenu">0 €</dd></div>
+            <div><dt>Abattement 10 % frais professionnels</dt><dd id="ir-abattement">0 €</dd></div>
+            <div><dt>Revenu net imposable</dt><dd id="ir-rni">0 €</dd></div>
+            <div><dt>Quotient familial</dt><dd id="ir-quotient">0 €</dd></div>
+            <div><dt>Taux effectif</dt><dd id="ir-taux">0 %</dd></div>
+          </dl>
+        </div>
+        <p class="tranches-title">Tranche marginale d’imposition</p>
+        <ol class="tranches" id="tranches">
+          <li data-tmi="0"><b>0 %</b><span>≤ 11 600 €</span></li>
+          <li data-tmi="0.11"><b>11 %</b><span>≤ 29 579 €</span></li>
+          <li data-tmi="0.3"><b>30 %</b><span>≤ 84 577 €</span></li>
+          <li data-tmi="0.41"><b>41 %</b><span>≤ 181 917 €</span></li>
+          <li data-tmi="0.45"><b>45 %</b><span>au-delà</span></li>
+        </ol>
+        <p class="hint">Hors décote et plafonnement du quotient familial.</p>
+      </section>
+
+      <details class="card details">
+        <summary>
+          <span class="card-title">Décomposition des cotisations</span>
+          <span class="summary-total" id="d-total">0 €</span>
+          <svg class="chevron" viewBox="0 0 24 24" width="18" height="18" fill="none" stroke="currentColor" stroke-width="2" stroke-linecap="round" stroke-linejoin="round" aria-hidden="true"><path d="m6 9 6 6 6-6"/></svg>
+        </summary>
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr><th scope="col">Cotisation</th><th scope="col" class="num col-assiette">Assiette</th><th scope="col" class="num">Taux</th><th scope="col" class="num">Montant</th></tr>
+            </thead>
+            <tbody id="d-body"></tbody>
+            <tfoot>
+              <tr><th scope="row">Total salarié</th><td class="num col-assiette" id="d-brut"></td><td class="num" id="d-taux"></td><td class="num" id="d-total-foot"></td></tr>
+            </tfoot>
+          </table>
+        </div>
+      </details>
+    </section>
+  </main>
+
+  <footer class="foot">Barèmes 2026 — estimation indicative, hors cas particuliers (Alsace-Moselle, heures sup, primes)</footer>
+
+  <p class="sr-only" id="live" aria-live="polite"></p>
+
+  <script src="calc.js"></script>
+  <script src="app.js"></script>
+</body>
+</html>

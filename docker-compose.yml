@@ -1,0 +1,14 @@
+services:
+  salaire-calc:
+    build: .
+    image: salaire-calc:latest
+    container_name: salaire-calc
+    restart: unless-stopped
+    ports:
+      - "8300:80"
+    networks:
+      - media
+
+networks:
+  media:
+    external: true
